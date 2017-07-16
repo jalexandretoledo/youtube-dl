@@ -9,6 +9,7 @@ from ..utils import (
     PostProcessingError,
 )
 
+import pprint
 
 class ExecAfterDownloadPP(PostProcessor):
     def __init__(self, downloader, exec_cmd):
@@ -21,6 +22,17 @@ class ExecAfterDownloadPP(PostProcessor):
             cmd += ' {}'
 
         cmd = cmd.replace('{}', compat_shlex_quote(information['filepath']))
+
+
+        tmpInfo = information.copy()
+        if not tmpInfo.has_key(u"description"):
+            tmpInfo[u"description"] = "(no description)"
+
+        if not tmpInfo.has_key(u"title"):
+            tmpInfo[u"title"] = "(no title)"
+
+        ## pprint.pprint(tmpInfo)
+        cmd = cmd % tmpInfo
 
         self._downloader.to_screen('[exec] Executing command: %s' % cmd)
         retCode = subprocess.call(encodeArgument(cmd), shell=True)
